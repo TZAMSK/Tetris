@@ -2,6 +2,7 @@
 
 mod engine;
 mod interface;
+mod piece;
 
 use engine::Engine;
 use interface::Interface;
