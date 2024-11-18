@@ -1,4 +1,4 @@
-use crate::engine::{Coordinate, Matrix, Offset};
+use crate::engine::{Color, Coordinate, Matrix, Offset};
 use cgmath::{EuclideanSpace, Zero};
 
 #[derive(Debug, Copy, Clone)]
@@ -21,7 +21,7 @@ impl Piece {
 
     // A list of tuples of coords of the 4 cells
     pub fn cells(&self) -> Option<[Coordinate; Self::CELL_COUNT]> {
-        let offsets = self.kind.cells().map(self.rotator()).map(self.positioner());
+        let offsets = dbg!(self.kind.cells().map(self.rotator()).map(self.positioner()));
 
         let mut coords = [Coordinate::origin(); Self::CELL_COUNT];
 
@@ -83,13 +83,13 @@ impl Kind {
     // Coords of all kinds
     pub fn cells(&self) -> [Offset; Piece::CELL_COUNT] {
         match self {
-            Kind::O => &[(1, 1), (1, 2), (2, 1), (2, 2)],
-            Kind::I => &[(0, 2), (1, 2), (2, 2), (3, 2)],
-            Kind::T => &[(0, 1), (1, 1), (2, 1), (1, 2)],
-            Kind::L => &[(0, 1), (1, 1), (2, 1), (2, 2)],
-            Kind::J => &[(0, 2), (0, 1), (1, 1), (2, 1)],
-            Kind::S => &[(1, 1), (1, 1), (1, 2), (2, 2)],
-            Kind::Z => &[(0, 2), (1, 2), (1, 1), (2, 1)],
+            Self::O => &[(1, 1), (1, 2), (2, 1), (2, 2)],
+            Self::I => &[(0, 2), (1, 2), (2, 2), (3, 2)],
+            Self::T => &[(0, 1), (1, 1), (2, 1), (1, 2)],
+            Self::L => &[(0, 1), (1, 1), (2, 1), (2, 2)],
+            Self::J => &[(0, 2), (0, 1), (1, 1), (2, 1)],
+            Self::S => &[(1, 1), (1, 1), (1, 2), (2, 2)],
+            Self::Z => &[(0, 2), (1, 2), (1, 1), (2, 1)],
         }
         // map transforms each element of an iterator into a new form
         .map(Offset::from) // from converts to that type (here Offset)
@@ -97,8 +97,20 @@ impl Kind {
 
     fn grid_size(&self) -> isize {
         match self {
-            Kind::I => 4,
+            Self::I => 4,
             _ => 3,
+        }
+    }
+
+    pub fn color(&self) -> Color {
+        match self {
+            Self::O => Color::Yellow,
+            Self::I => Color::Cyan,
+            Self::T => Color::Purple,
+            Self::L => Color::Orange,
+            Self::J => Color::Blue,
+            Self::S => Color::Green,
+            Self::Z => Color::Red,
         }
     }
 }
