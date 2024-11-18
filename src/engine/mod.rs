@@ -1,3 +1,5 @@
+pub type Offset = cgmath::Vector2<isize>;
+
 pub struct Engine {
     board: Board,
 }
