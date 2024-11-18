@@ -1,7 +1,7 @@
 use crate::engine::{Coordinate, Matrix, Offset};
 use cgmath::{EuclideanSpace, Zero};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Piece {
     pub kind: Kind,
     pub position: Offset,
