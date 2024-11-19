@@ -1,4 +1,7 @@
-use std::ops::{Index, IndexMut};
+use std::{
+    io::Cursor,
+    ops::{Index, IndexMut},
+};
 
 use crate::piece::{Kind as PieceKind, Piece};
 use rand::prelude::*;
@@ -80,6 +83,30 @@ impl Engine {
         }
 
         Ok(self.cursor = Some(new))
+    }
+
+    fn tick_down(&mut self) {
+        self.cursor = Some(self.ticked_down_cursor().unwrap());
+    }
+
+    fn cursor_has_hit_bottom(&self) -> bool {
+        self.cursor.is_some() && self.ticked_down_cursor().is_none()
+    }
+
+    fn ticked_down_cursor(&self) -> Option<Piece> {
+        let Some(cursor) = self.cursor else {
+            return None;
+        };
+        let new = cursor.moved_by(Offset::new(0, -1));
+
+        (!self.matrix.is_clipping(&new)).then_some(new)
+    }
+
+    fn hard_drop(&mut self) {
+        while let Some(new) = self.ticked_down_cursor() {
+            self.cursor = Some(new);
+        }
+        self.place_cursor();
     }
 }
 
