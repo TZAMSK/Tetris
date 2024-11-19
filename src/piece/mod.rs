@@ -1,6 +1,7 @@
 use crate::engine::{Coordinate, Matrix, Offset};
 use cgmath::{EuclideanSpace, Zero};
 
+#[derive(Debug)]
 pub struct Piece {
     pub kind: Kind,
     pub position: Offset,
@@ -10,6 +11,13 @@ pub struct Piece {
 impl Piece {
     // All pieces have 4 cells
     const CELL_COUNT: usize = 4;
+
+    pub fn moved_by(&self, offset: Offset) -> Self {
+        Self {
+            position: self.position + offset,
+            ..*self
+        }
+    }
 
     // A list of tuples of coords of the 4 cells
     pub fn cells(&self) -> Option<[Coordinate; Self::CELL_COUNT]> {
@@ -22,7 +30,7 @@ impl Piece {
 
             let coord = Coordinate::from_vec(positive_offset);
 
-            if Matrix::in_bounds(coord) {
+            if Matrix::valid_coord(coord) {
                 *coord_slot = coord;
             } else {
                 return None;
