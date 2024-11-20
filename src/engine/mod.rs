@@ -1,7 +1,4 @@
-use std::{
-    io::Cursor,
-    ops::{Index, IndexMut},
-};
+use std::ops::{Index, IndexMut};
 
 use crate::piece::{Kind as PieceKind, Piece};
 use rand::prelude::*;
@@ -66,8 +63,10 @@ impl Engine {
             cursor
         );
 
+        let color = cursor.kind.color();
+
         for coord in cursor.cells().unwrap() {
-            self.matrix[coord] = true
+            self.matrix[coord] = Some(color);
         }
     }
 
@@ -110,8 +109,19 @@ impl Engine {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Color {
+    Yellow,
+    Cyan,
+    Purple,
+    Orange,
+    Blue,
+    Green,
+    Red,
+}
+
 // A list of size, SIZE that has booleans. A single field as a tuple
-pub struct Matrix([bool; Self::SIZE]);
+pub struct Matrix([Option<Color>; Self::SIZE]);
 
 impl Matrix {
     const WIDTH: usize = 10;
@@ -135,17 +145,17 @@ impl Matrix {
 
     // The whole board is empty (all cell false)
     fn blank() -> Self {
-        Self([false; Self::SIZE])
+        Self([None; Self::SIZE])
     }
 
     fn is_clipping(&self, piece: &Piece) -> bool {
         let Some(cells) = piece.cells() else {
-            return false;
+            return true;
         };
 
         cells
             .into_iter()
-            .all(|coord| !Matrix::on_matrix(coord) || self[coord] == false)
+            .all(|coord| !Matrix::on_matrix(coord) || self[coord].is_some())
     }
 
     fn is_placeable(&self, piece: &Piece) -> bool {
@@ -155,12 +165,12 @@ impl Matrix {
 
         cells
             .into_iter()
-            .all(|coord| Matrix::on_matrix(coord) && self[coord] == false)
+            .all(|coord| Matrix::on_matrix(coord) && self[coord].is_none())
     }
 }
 
 impl Index<Coordinate> for Matrix {
-    type Output = bool;
+    type Output = Option<Color>;
 
     fn index(&self, coord: Coordinate) -> &Self::Output {
         assert!(Self::on_matrix(coord));
