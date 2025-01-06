@@ -143,6 +143,5 @@ fn draw(canvas: &mut Canvas<Window>) {
     canvas.fill_rect(hold).unwrap();
     canvas.fill_rect(queue).unwrap();
     canvas.fill_rect(score).unwrap();
-
     canvas.present();
 }
